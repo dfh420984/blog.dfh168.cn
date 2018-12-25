@@ -15,8 +15,8 @@ class Index extends Base
 
         function index()
         {
-            // Blade View
-           // $this->render('index');     # 对应模板: Views/index.blade.php
+            //laravel Blade View
+           // $this->render('index');     # 对应模板: Views/index.blade.php 
            $this->response()->redirect("/admin/index.html");
         }
 //    function index()
