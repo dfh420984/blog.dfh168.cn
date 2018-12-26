@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../assets/vendors/nprogress/nprogress.css">
   <link rel="stylesheet" href="../assets/css/admin.css">
   <script src="../assets/vendors/nprogress/nprogress.js"></script>
+  <script src="/assets/vendors/commen.js"></script>
   <script src="/assets/vendors/vue/vue.js"></script>
   <script src="/assets/vendors/axios/axios.min.js"></script>
   <style type="text/css">
@@ -95,7 +96,7 @@
   <script>NProgress.done()</script>
   <script>
       window.onload = function () {
-        var host = 'http://swoole_vedio.com:83';
+        var host = getHost();
         var vue_main = new Vue({
           el: '#main',
           data: {
@@ -112,7 +113,6 @@
                 url:`${host}/admin/index/index`
               }).then((resp)=>{
                 if (resp.data.code == 0) {
-                  console.log(this.article_num);
                   this.article_num = resp.data.msg.article_num;
                   this.article_draft_num = resp.data.msg.article_draft_num;
                   this.category_num = resp.data.msg.category_num;

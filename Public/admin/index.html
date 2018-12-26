@@ -8,23 +8,31 @@
   <link rel="stylesheet" href="../assets/vendors/nprogress/nprogress.css">
   <link rel="stylesheet" href="../assets/css/admin.css">
   <script src="../assets/vendors/nprogress/nprogress.js"></script>
+  <script src="/assets/vendors/commen.js"></script>
+  <script src="/assets/vendors/vue/vue.js"></script>
+  <script src="/assets/vendors/axios/axios.min.js"></script>
+  <style type="text/css">
+    [v-cloak] {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <script>NProgress.start()</script>
 
-  <div class="main">
+  <div class="main" id="main" v-cloak>
     <nav class="navbar">
       <button class="btn btn-default navbar-btn fa fa-bars"></button>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="profile.html"><i class="fa fa-user"></i>个人中心</a></li>
-        <li><a href="login.html"><i class="fa fa-sign-out"></i>退出</a></li>
+        <li><a href="/admin/profile.html"><i class="fa fa-user"></i>个人中心</a></li>
+        <li><a href="/admin/login.html"><i class="fa fa-sign-out"></i>退出</a></li>
       </ul>
     </nav>
     <div class="container-fluid">
       <div class="jumbotron text-center">
         <h1>One Belt, One Road</h1>
         <p>Thoughts, stories and ideas.</p>
-        <p><a class="btn btn-primary btn-lg" href="post-add.html" role="button">写文章</a></p>
+        <p><a class="btn btn-primary btn-lg" href="/admin/post-add.html" role="button">写文章</a></p>
       </div>
       <div class="row">
         <div class="col-md-4">
@@ -33,9 +41,9 @@
               <h3 class="panel-title">站点内容统计：</h3>
             </div>
             <ul class="list-group">
-              <li class="list-group-item"><strong>10</strong>篇文章（<strong>2</strong>篇草稿）</li>
-              <li class="list-group-item"><strong>6</strong>个分类</li>
-              <li class="list-group-item"><strong>5</strong>条评论（<strong>1</strong>条待审核）</li>
+              <li class="list-group-item"><strong>{{ article_num }}</strong>篇文章（<strong>{{ article_draft_num }}</strong>篇草稿）</li>
+              <li class="list-group-item"><strong>{{ category_num }}</strong>个分类</li>
+              <li class="list-group-item"><strong>{{ comment_num }}</strong>条评论（<strong>{{ verify_comment_num }}</strong>条待审核）</li>
             </ul>
           </div>
         </div>
@@ -45,39 +53,39 @@
     </div>
   </div>
 
-  <div class="aside">
+  <div class="aside" id="aside" v-cloak>
     <div class="profile">
       <img class="avatar" src="../uploads/avatar.jpg">
-      <h3 class="name">布头儿</h3>
+      <h3 class="name">{{ avatar_name }}</h3>
     </div>
     <ul class="nav">
       <li class="active">
-        <a href="index.html"><i class="fa fa-dashboard"></i>仪表盘</a>
+        <a href="/admin/index.html"><i class="fa fa-dashboard"></i>仪表盘</a>
       </li>
       <li>
         <a href="#menu-posts" class="collapsed" data-toggle="collapse">
           <i class="fa fa-thumb-tack"></i>文章<i class="fa fa-angle-right"></i>
         </a>
         <ul id="menu-posts" class="collapse">
-          <li><a href="posts.html">所有文章</a></li>
-          <li><a href="post-add.html">写文章</a></li>
-          <li><a href="categories.html">分类目录</a></li>
+          <li><a href="/admin/posts.html">所有文章</a></li>
+          <li><a href="/admin/post-add.html">写文章</a></li>
+          <li><a href="/admin/categories.html">分类目录</a></li>
         </ul>
       </li>
       <li>
-        <a href="comments.html"><i class="fa fa-comments"></i>评论</a>
+        <a href="/admin/comments.html"><i class="fa fa-comments"></i>评论</a>
       </li>
       <li>
-        <a href="users.html"><i class="fa fa-users"></i>用户</a>
+        <a href="/admin/users.html"><i class="fa fa-users"></i>用户</a>
       </li>
       <li>
         <a href="#menu-settings" class="collapsed" data-toggle="collapse">
           <i class="fa fa-cogs"></i>设置<i class="fa fa-angle-right"></i>
         </a>
         <ul id="menu-settings" class="collapse">
-          <li><a href="nav-menus.html">导航菜单</a></li>
-          <li><a href="slides.html">图片轮播</a></li>
-          <li><a href="settings.html">网站设置</a></li>
+          <li><a href="/admin/nav-menus.html">导航菜单</a></li>
+          <li><a href="/admin/slides.html">图片轮播</a></li>
+          <li><a href="/admin/settings.html">网站设置</a></li>
         </ul>
       </li>
     </ul>
@@ -86,6 +94,50 @@
   <script src="../assets/vendors/jquery/jquery.js"></script>
   <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
   <script>NProgress.done()</script>
-  <script src="../assets/vendors/vue/vue.js"></script>
+  <script>
+      window.onload = function () {
+        var vue_main = new Vue({
+          el: '#main',
+          data: {
+            article_num:0,
+            article_draft_num:0,
+            category_num:0,
+            comment_num:0,
+            verify_comment_num:0
+          },
+          methods: {
+            send(){
+              axios({
+                method:'get',
+                url:`${host}/admin/index/index`
+              }).then((resp)=>{
+                if (resp.data.code == 0) {
+                  this.article_num = resp.data.msg.article_num;
+                  this.article_draft_num = resp.data.msg.article_draft_num;
+                  this.category_num = resp.data.msg.category_num;
+                  this.comment_num = resp.data.msg.comment_num;
+                  this.verify_comment_num = resp.data.msg.verify_comment_num;
+                }
+              }).catch(resp => {
+                console.log('请求失败：'+resp.status+','+resp.statusText);
+              });
+            }
+          },
+          created: function () {
+            this.send()
+          }
+        });
+
+        var vue_aside = new Vue({
+          el: '#aside',
+          data: {
+            'avatar_name':'布头儿'
+          },
+          method: {
+
+          }
+        });
+      }
+  </script>
 </body>
 </html>
