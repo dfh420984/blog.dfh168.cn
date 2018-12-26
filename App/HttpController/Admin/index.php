@@ -5,6 +5,9 @@
  * Date: 2018/12/25
  * Time: 18:01
 **/
+namespace  App\HttpController\Admin;
+use App\HttpController\Base;
+use App\Model\Admin\IndexModel;
 
 class Index extends Base {
 
@@ -13,12 +16,9 @@ class Index extends Base {
      * Index constructor.
      */
     public function index() {
-        $data = [
-            'article_num' => 0, //文章数量
-            'category_num' => 0, //分类数量
-            'comment_num' => 0, //评论数量
-            'wait_verify_num' => 0, //评论待审核数量
-        ];
 
+        $model = IndexModel::getInstance();
+        $data = $model->index();
+        return $this->writeJson($data["code"],$data["msg"],$data["data"]);
     }
 }

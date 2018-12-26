@@ -20,6 +20,7 @@ use App\Lib\Process\Consumer;
 use EasySwoole\EasySwoole\ServerManager;
 use EasySwoole\Component\Pool\PoolManager;
 use App\Lib\Process\HotReload;
+use App\Lib\Pool\MysqlPool;
 
 class EasySwooleEvent implements Event
 {
@@ -59,8 +60,7 @@ class EasySwooleEvent implements Event
         Di::getInstance()->set('REDIS', Redis::getInstance());
 
         // 注册mysql数据库连接池
-        PoolManager::getInstance()->register(MysqlPool::class, Config::getInstance()->getConf('MYSQL.POOL_MAX_NUM'));
-
+        PoolManager::getInstance()->register(MysqlPool::class, Config::getInstance()->getConf('mysql.pool_max_num'));
         //注册热重载
         $swooleServer = ServerManager::getInstance()->getSwooleServer();
         $swooleServer->addProcess((new HotReload('HotReload', ['disableInotify' => false]))->getProcess());
