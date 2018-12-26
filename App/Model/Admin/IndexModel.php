@@ -14,7 +14,6 @@ use EasySwoole\Component\Singleton;
 
 class IndexModel extends BaseModel
 {
-    use Singleton;
     /**
      * 后台首页逻辑
      * Index constructor.
@@ -29,7 +28,7 @@ class IndexModel extends BaseModel
         'verify_comment_num' => 0, //评论待审核数量
     ];
 
-    private function __construct()
+    public function __construct()
     {
         $this->db = $this->getMysqlPoolObj();
         $this->db_config = Config::getInstance()->getConf('mysql_table');

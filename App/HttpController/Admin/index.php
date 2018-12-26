@@ -16,8 +16,7 @@ class Index extends Base {
      * Index constructor.
      */
     public function index() {
-
-        $model = IndexModel::getInstance();
+        $model = new IndexModel();
         $data = $model->index();
         return $this->writeJson($data["code"],$data["msg"],$data["data"]);
     }

@@ -9,11 +9,17 @@
   <link rel="stylesheet" href="../assets/css/admin.css">
   <script src="../assets/vendors/nprogress/nprogress.js"></script>
   <script src="/assets/vendors/vue/vue.js"></script>
+  <script src="/assets/vendors/axios/axios.min.js"></script>
+  <style type="text/css">
+    [v-cloak] {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <script>NProgress.start()</script>
 
-  <div class="main">
+  <div class="main" id="main" v-cloak>
     <nav class="navbar">
       <button class="btn btn-default navbar-btn fa fa-bars"></button>
       <ul class="nav navbar-nav navbar-right">
@@ -34,9 +40,9 @@
               <h3 class="panel-title">站点内容统计：</h3>
             </div>
             <ul class="list-group">
-              <li class="list-group-item"><strong>10</strong>篇文章（<strong>2</strong>篇草稿）</li>
-              <li class="list-group-item"><strong>6</strong>个分类</li>
-              <li class="list-group-item"><strong>5</strong>条评论（<strong>1</strong>条待审核）</li>
+              <li class="list-group-item"><strong>{{ article_num }}</strong>篇文章（<strong>{{ article_draft_num }}</strong>篇草稿）</li>
+              <li class="list-group-item"><strong>{{ category_num }}</strong>个分类</li>
+              <li class="list-group-item"><strong>{{ comment_num }}</strong>条评论（<strong>{{ verify_comment_num }}</strong>条待审核）</li>
             </ul>
           </div>
         </div>
@@ -46,7 +52,7 @@
     </div>
   </div>
 
-  <div class="aside" id="aside">
+  <div class="aside" id="aside" v-cloak>
     <div class="profile">
       <img class="avatar" src="../uploads/avatar.jpg">
       <h3 class="name">{{ avatar_name }}</h3>
@@ -88,19 +94,51 @@
   <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
   <script>NProgress.done()</script>
   <script>
-      var vue_main = new Vue({
+      window.onload = function () {
+        var host = 'http://swoole_vedio.com:83';
+        var vue_main = new Vue({
+          el: '#main',
+          data: {
+            article_num:0,
+            article_draft_num:0,
+            category_num:0,
+            comment_num:0,
+            verify_comment_num:0
+          },
+          methods: {
+            send(){
+              axios({
+                method:'get',
+                url:`${host}/admin/index/index`
+              }).then((resp)=>{
+                if (resp.data.code == 0) {
+                  console.log(this.article_num);
+                  this.article_num = resp.data.msg.article_num;
+                  this.article_draft_num = resp.data.msg.article_draft_num;
+                  this.category_num = resp.data.msg.category_num;
+                  this.comment_num = resp.data.msg.comment_num;
+                  this.verify_comment_num = resp.data.msg.verify_comment_num;
+                }
+              }).catch(resp => {
+                console.log('请求失败：'+resp.status+','+resp.statusText);
+              });
+            }
+          },
+          created: function () {
+            this.send()
+          }
+        });
 
-      });
+        var vue_aside = new Vue({
+          el: '#aside',
+          data: {
+            'avatar_name':'布头儿'
+          },
+          method: {
 
-      var vue_aside = new Vue({
-        el: '#aside',
-        data: {
-          'avatar_name':'布头儿'
-        },
-        method: {
-
-        }
-      });
+          }
+        });
+      }
   </script>
 </body>
 </html>
