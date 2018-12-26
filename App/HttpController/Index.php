@@ -9,14 +9,13 @@ namespace App\HttpController;
 
 use EasySwoole\EasySwoole\ServerManager;
 use EasySwoole\Http\AbstractInterface\Controller;
-
 class Index extends Base
 {
 
         function index()
         {
             //laravel Blade View
-           // $this->render('index');     # 对应模板: Views/index.blade.php 
+           // $this->render('index');     # 对应模板: Views/index.blade.php
            $this->response()->redirect("/admin/index.html");
         }
 //    function index()
