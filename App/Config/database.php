@@ -9,6 +9,6 @@ return [
     'host'=>'mysql',
     'port'=>3306,
     'user'=>'root',
-    'password'=>'123456',
-    'database'=>'swoole'
+    'password'=>'DockerLNMP',
+    'database'=>'blog'
 ];

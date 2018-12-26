@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../assets/vendors/nprogress/nprogress.css">
   <link rel="stylesheet" href="../assets/css/admin.css">
   <script src="../assets/vendors/nprogress/nprogress.js"></script>
+  <script src="/assets/vendors/vue/vue.js"></script>
 </head>
 <body>
   <script>NProgress.start()</script>
@@ -45,10 +46,10 @@
     </div>
   </div>
 
-  <div class="aside">
+  <div class="aside" id="aside">
     <div class="profile">
       <img class="avatar" src="../uploads/avatar.jpg">
-      <h3 class="name">布头儿</h3>
+      <h3 class="name">{{ avatar_name }}</h3>
     </div>
     <ul class="nav">
       <li class="active">
@@ -86,5 +87,20 @@
   <script src="../assets/vendors/jquery/jquery.js"></script>
   <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
   <script>NProgress.done()</script>
+  <script>
+      var vue_main = new Vue({
+
+      });
+
+      var vue_aside = new Vue({
+        el: '#aside',
+        data: {
+          'avatar_name':'布头儿'
+        },
+        method: {
+
+        }
+      });
+  </script>
 </body>
 </html>

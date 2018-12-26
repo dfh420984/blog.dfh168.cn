@@ -18,6 +18,7 @@ use App\Lib\Redis\Redis;
 use EasySwoole\Utility\File;
 use App\Lib\Process\Consumer;
 use EasySwoole\EasySwoole\ServerManager;
+use EasySwoole\Component\Pool\PoolManager;
 use App\Lib\Process\HotReload;
 
 class EasySwooleEvent implements Event
@@ -56,6 +57,9 @@ class EasySwooleEvent implements Event
         // TODO: Implement mainServerCreate() method.
         //注入redis单例
         Di::getInstance()->set('REDIS', Redis::getInstance());
+
+        // 注册mysql数据库连接池
+        PoolManager::getInstance()->register(MysqlPool::class, Config::getInstance()->getConf('MYSQL.POOL_MAX_NUM'));
 
         //注册热重载
         $swooleServer = ServerManager::getInstance()->getSwooleServer();

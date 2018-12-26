@@ -1,6 +1,6 @@
 # ide
 /.idea/
-
+/App/Config/
 # composer
 /vendor/
 /composer.lock
