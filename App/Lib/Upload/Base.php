@@ -12,10 +12,8 @@ use EasySwoole\Http\Request;
 
 class Base
 {
-
-    public $type = ''; //上传的文件名称
-    public $data = ['code' => 0, 'msg' => '', 'data' => ''];
-    public $rootPath = EASYSWOOLE_ROOT . '/Public/uploads';
+    public $data = ['code' => 0, 'msg' => '', 'data' => []];
+    public $rootPath = '/uploads';
     private $request = null;
     public $size = 0;
     public $fileName = '';
@@ -24,33 +22,44 @@ class Base
     public function __construct(Request $request)
     {
         $this->request = $request;
-        $files = $this->request->getSwooleRequest()->files;
-        $types = array_keys($files);
-        $this->type = $types[0];
     }
 
     public function upload()
     {
         try {
-            $fileObj = $this->request->getUploadedFile($this->type);
-            if ($this->getError($fileObj)) {
-                $this->size = $fileObj->getSize();
-                if ($this->checkSize()) {
-                    $this->fileName = $fileObj->getClientFilename();
-                    if ($this->checkFileExtType()) {
-                        $targetPath = $this->getTargetPath();
-                        if ($fileObj->moveTo($targetPath)) {
-                            $this->data['data'] = $targetPath;
-                        } else {
-                            $this->data['code'] = 1;
-                            $this->data['msg'] = '上传文件失败';;
-                        }
+            $fileUploadObjs = $this->request->getUploadedFiles(); //获取多个上传对象
+            foreach ($fileUploadObjs as $key => $val) {
+                if(is_array($fileUploadObjs[$key])) {
+                    foreach ($fileUploadObjs[$key] as $key2=>$fileObj) { //同一名称上传多个图片时
+                        $this->doUpload($fileObj, $key, $key2);
                     }
+                } else {
+                    $fileObj = $fileUploadObjs[$key];
+                    $key2 = 0;
+                    $this->doUpload($fileObj, $key, $key2);
                 }
-                return $this->data;
             }
+            return $this->data;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
+        }
+    }
+
+    public function doUpload($fileObj, $key, $key2=0) {
+        if ($this->getError($fileObj)) {
+            $this->size = $fileObj->getSize();
+            if ($this->checkSize()) {
+                $this->fileName = $fileObj->getClientFilename();
+                if ($this->checkFileExtType()) {
+                    $targetPath = $this->getTargetPath();
+                    if ($fileObj->moveTo($targetPath)) {
+                        $this->data['data'][$key][$key2] = $targetPath;
+                    } else {
+                        $this->data['code'] = 1;
+                        $this->data['msg'] = '上传文件失败';
+                    }
+                }
+            }
         }
     }
 
