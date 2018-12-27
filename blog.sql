@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50642
 File Encoding         : 65001
 
-Date: 2018-12-26 17:02:34
+Date: 2018-12-27 17:29:06
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -46,6 +46,7 @@ DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '分类主键',
   `parent_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '分类上级id,category.id',
+  `slug` varchar(255) NOT NULL DEFAULT '' COMMENT '别名',
   `content` varchar(25) NOT NULL DEFAULT '' COMMENT '分类内容',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态,0:禁用,1.启用,2.删除',
   `time_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -56,10 +57,10 @@ CREATE TABLE `category` (
 -- ----------------------------
 -- Records of category
 -- ----------------------------
-INSERT INTO `category` VALUES ('1', '0', 'php', '1', '2018-12-26 03:21:04', '2018-12-26 03:21:04');
-INSERT INTO `category` VALUES ('2', '0', 'java', '1', '2018-12-26 03:21:04', '2018-12-26 03:21:04');
-INSERT INTO `category` VALUES ('3', '0', 'python', '1', '2018-12-26 03:21:04', '2018-12-26 03:21:04');
-INSERT INTO `category` VALUES ('4', '0', 'go', '1', '2018-12-26 03:21:04', '2018-12-26 03:21:04');
+INSERT INTO `category` VALUES ('1', '0', '', 'php', '1', '2018-12-26 03:21:04', '2018-12-26 03:21:04');
+INSERT INTO `category` VALUES ('2', '0', '', 'java', '1', '2018-12-26 03:21:04', '2018-12-26 03:21:04');
+INSERT INTO `category` VALUES ('3', '0', '', 'python', '1', '2018-12-26 03:21:04', '2018-12-26 03:21:04');
+INSERT INTO `category` VALUES ('4', '0', '', 'go', '1', '2018-12-26 03:21:04', '2018-12-26 03:21:04');
 
 -- ----------------------------
 -- Table structure for comments
@@ -95,6 +96,7 @@ CREATE TABLE `posts` (
   `user_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '发帖用户id,关联user.id',
   `cat_id` int(11) NOT NULL DEFAULT '0' COMMENT '帖子分类id,关联category.id',
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '帖子标题',
+  `slug` varchar(255) NOT NULL DEFAULT '' COMMENT '别名',
   `content` text NOT NULL COMMENT '帖子内容',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态,0:待审核,1.上线,2.删除',
   `time_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -106,8 +108,8 @@ CREATE TABLE `posts` (
 -- ----------------------------
 -- Records of posts
 -- ----------------------------
-INSERT INTO `posts` VALUES ('1', '1', '1', 'easyswoole强大', 'easyswoole太强大了，非常好用', '1', '2018-12-26 03:11:56', '2018-12-26 03:11:56');
-INSERT INTO `posts` VALUES ('2', '1', '1', 'swoole太牛逼了', 'swoole太牛逼了，杠杆滴', '1', '2018-12-26 03:11:56', '2018-12-26 03:11:56');
+INSERT INTO `posts` VALUES ('1', '1', '1', 'easyswoole强大', '', 'easyswoole太强大了，非常好用', '1', '2018-12-26 03:11:56', '2018-12-26 03:11:56');
+INSERT INTO `posts` VALUES ('2', '1', '1', 'swoole太牛逼了', '', 'swoole太牛逼了，杠杆滴', '1', '2018-12-26 03:11:56', '2018-12-26 03:11:56');
 
 -- ----------------------------
 -- Table structure for user
@@ -117,6 +119,8 @@ CREATE TABLE `user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '前台用户主键',
   `email` varchar(35) NOT NULL DEFAULT '' COMMENT '前台用户邮箱',
   `mobile` char(13) NOT NULL DEFAULT '' COMMENT '前台用户手机号',
+  `nickname` varchar(25) NOT NULL DEFAULT '' COMMENT '昵称',
+  `slug` varchar(255) NOT NULL DEFAULT '' COMMENT 'slug别名',
   `head_image` varchar(255) NOT NULL DEFAULT '' COMMENT '用户头像',
   `ip` int(10) NOT NULL DEFAULT '0' COMMENT '前台用户登录ip',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '用户状态,0：禁用 ,1.启用，2.删除',
@@ -131,6 +135,6 @@ CREATE TABLE `user` (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES ('1', '352928736@qq.com', '13331139424', '', '2130706433', '1', '2018-12-26 03:19:03', '2018-12-26 03:19:03', '2018-12-26 03:19:03');
-INSERT INTO `user` VALUES ('2', 'duanfuhao@smzdm.com', '15172471345', '', '2130706433', '1', '2018-12-26 03:19:03', '2018-12-26 03:19:03', '2018-12-26 03:19:03');
-INSERT INTO `user` VALUES ('3', 'duanfuhao@163.com', '13693240212', '', '2130706433', '1', '2018-12-26 03:19:03', '2018-12-26 03:19:03', '2018-12-26 03:19:03');
+INSERT INTO `user` VALUES ('1', '352928736@qq.com', '13331139424', '', '', '', '2130706433', '1', '2018-12-26 03:19:03', '2018-12-26 03:19:03', '2018-12-26 03:19:03');
+INSERT INTO `user` VALUES ('2', 'duanfuhao@smzdm.com', '15172471345', '', '', '', '2130706433', '1', '2018-12-26 03:19:03', '2018-12-26 03:19:03', '2018-12-26 03:19:03');
+INSERT INTO `user` VALUES ('3', 'duanfuhao@163.com', '13693240212', '', '', '', '2130706433', '1', '2018-12-26 03:19:03', '2018-12-26 03:19:03', '2018-12-26 03:19:03');
