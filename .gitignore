@@ -3,6 +3,7 @@
 # composer
 /vendor/
 /composer.lock
+/composer.json
 
 # easySwoole
 /Log/
