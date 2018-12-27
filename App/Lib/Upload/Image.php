@@ -8,11 +8,13 @@
 namespace App\Lib\Upload;
 
 
-class Vedio extends Base {
+class Image extends Base {
 
-    public $maxSize = '1024*1024';
+    public $maxSize = 1024 * 1024;
     public $fileExtTypes = [
-        'mp4',
-        'x-flv'
+        'png',
+        'jpg',
+        'jpeg',
+        'gif'
     ];
 }
