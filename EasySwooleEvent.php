@@ -41,7 +41,7 @@ class EasySwooleEvent implements Event
         $files = File::scanDirectory(EASYSWOOLE_ROOT . $appPath);
         if (is_array($files)) {
             foreach ($files['files'] as $file) {
-                $file = strtolower($file);
+                //$file = strtolower($file); (此处转小写可能会有问题)
                 $fileNameArr = explode('.', $file);
                 $fileSuffix = end($fileNameArr);
                 if ($fileSuffix == 'php') {
