@@ -12,7 +12,7 @@ use EasySwoole\Http\Request;
 
 class Base
 {
-    public $data = ['code' => 0, 'msg' => '', 'data' => []];
+    public $data = ['code' => 0, 'msg' => 'ok', 'data' => []];
     public $rootPath = '/uploads';
     private $request = null;
     public $size = 0;
@@ -24,7 +24,8 @@ class Base
         $this->request = $request;
     }
 
-    public function upload()
+    /**多图上传**/
+    public function uploads()
     {
         try {
             $fileUploadObjs = $this->request->getUploadedFiles(); //获取多个上传对象
@@ -45,7 +46,7 @@ class Base
         }
     }
 
-    public function doUpload($fileObj, $key, $key2=0) {
+    public function doUpload($fileObj, $key=0, $key2=0) {
         if ($this->getError($fileObj)) {
             $this->size = $fileObj->getSize();
             if ($this->checkSize()) {
@@ -53,7 +54,11 @@ class Base
                 if ($this->checkFileExtType()) {
                     $targetPath = $this->getTargetPath();
                     if ($fileObj->moveTo($targetPath)) {
-                        $this->data['data'][$key][$key2] = $targetPath;
+                        if (empty($key) && empty($key2)) {
+                            $this->data['data'] = $targetPath;  //单文件返回
+                        }else {
+                            $this->data['data'][$key][$key2] = $targetPath;   //处理多文件返回
+                        }
                     } else {
                         $this->data['code'] = 1;
                         $this->data['msg'] = '上传文件失败';
@@ -62,6 +67,20 @@ class Base
             }
         }
     }
+
+    /**单文件上传**/
+    public function upload() {
+        try {
+            $fileUploadObjs = $this->request->getUploadedFiles(); //获取单个上传对象
+            foreach ($fileUploadObjs as $key => $fileObj) {
+                $this->doUpload($fileObj);
+            }
+            return $this->data;
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
 
     public function getError($fileObj)
     {

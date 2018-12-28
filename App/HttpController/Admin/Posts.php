@@ -37,17 +37,6 @@ class Posts extends Base {
 
     }
 
-    /**帖子图片上传接口**/
-    public function post_image_upload() {
-        try {
-            $this->imageObj = new  Image($this->request());
-            $data = $this->imageObj->upload();
-            return $this->writeJson($data["code"],$data["msg"],$data["data"]);
-        }catch (\Exception $e) {
-            return $this->writeJson(400,'程序异常',$e->getMessage());
-        }
-    }
-
     public function afterAction(?string $actionName): void
     {
         $this->imageObj = null;

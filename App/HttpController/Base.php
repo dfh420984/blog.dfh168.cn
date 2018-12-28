@@ -16,6 +16,11 @@ abstract class Base extends Controller
 {
     protected $view;
 
+    public function index()
+    {
+        // TODO: Implement index() method.
+    }
+
     public function onRequest(?string $action): ?bool
     {
         $tempPath = Config::getInstance()->getConf('TEMP_DIR');    # 临时文件目录
