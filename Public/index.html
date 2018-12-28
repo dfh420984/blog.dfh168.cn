@@ -113,11 +113,11 @@
                 url:`${host}/admin/index/index`
               }).then((resp)=>{
                 if (resp.data.code == 0) {
-                  this.article_num = resp.data.msg.article_num;
-                  this.article_draft_num = resp.data.msg.article_draft_num;
-                  this.category_num = resp.data.msg.category_num;
-                  this.comment_num = resp.data.msg.comment_num;
-                  this.verify_comment_num = resp.data.msg.verify_comment_num;
+                  this.article_num = resp.data.data.article_num;
+                  this.article_draft_num = resp.data.data.article_draft_num;
+                  this.category_num = resp.data.data.category_num;
+                  this.comment_num = resp.data.data.comment_num;
+                  this.verify_comment_num = resp.data.data.verify_comment_num;
                 }
               }).catch(resp => {
                 console.log('请求失败：'+resp.status+','+resp.statusText);

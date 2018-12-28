@@ -38,7 +38,7 @@ class Base
                     $key2 = 0;
                     $this->doUpload($fileObj, $key, $key2);
                 }
-            }
+        }
             return $this->data;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
