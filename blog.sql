@@ -138,3 +138,6 @@ CREATE TABLE `user` (
 INSERT INTO `user` VALUES ('1', '352928736@qq.com', '13331139424', '', '', '', '2130706433', '1', '2018-12-26 03:19:03', '2018-12-26 03:19:03', '2018-12-26 03:19:03');
 INSERT INTO `user` VALUES ('2', 'duanfuhao@smzdm.com', '15172471345', '', '', '', '2130706433', '1', '2018-12-26 03:19:03', '2018-12-26 03:19:03', '2018-12-26 03:19:03');
 INSERT INTO `user` VALUES ('3', 'duanfuhao@163.com', '13693240212', '', '', '', '2130706433', '1', '2018-12-26 03:19:03', '2018-12-26 03:19:03', '2018-12-26 03:19:03');
+
+ALTER TABLE `posts`
+ADD COLUMN `image`  varchar(255) NOT NULL DEFAULT '' COMMENT '帖子图像' AFTER `slug`;

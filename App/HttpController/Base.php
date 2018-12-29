@@ -64,6 +64,10 @@ abstract class Base extends Controller
         }
     }
 
+    /**
+     * @param \Throwable $throwable
+     * 输出异常信息
+     */
     public function onException(\Throwable $throwable): void
     {
         $this->writeJson(400,

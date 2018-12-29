@@ -10,7 +10,6 @@ namespace App\Model\Admin;
 
 use App\Model\BaseModel;
 use  EasySwoole\EasySwoole\Config;
-use EasySwoole\Component\Singleton;
 
 class IndexModel extends BaseModel
 {
