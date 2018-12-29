@@ -45,6 +45,7 @@ class Posts extends Base
     public function postAddEdit()
     {
         $posts_array = $this->request()->getRequestParam();
+        $posts_array = $this->purifierHtml($posts_array);
         if (!$this->checkPost($posts_array)) {
             return $this->writeJson(1, 'fail', $this->valitor->getError()->__toString());
         }
@@ -75,6 +76,20 @@ class Posts extends Base
         $this->valitor->addColumn('title')->required('title必填')->betweenLen(1, 100, 'title需1-100字符之间');
         $this->valitor->addColumn('content')->required('content不能为空');
         return $this->valitor->validate($data);
+    }
+
+    /**
+     * 过滤字符串
+     */
+    public function purifierHtml($data) {
+        $config = \HTMLPurifier_Config::createDefault();
+        $purifier = new \HTMLPurifier($config);
+        foreach ($data as $key => $val) {
+            if (!is_numeric($val)) {
+                $data[$key] = $purifier->purify($val);
+            }
+        }
+        return $data;
     }
 
     public function afterAction(?string $actionName): void
