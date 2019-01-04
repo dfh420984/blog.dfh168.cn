@@ -350,3 +350,7 @@ body {
   border-radius: 50%;
   box-shadow: 0 1px 5px #ccc;
 }
+
+[v-cloak] {
+  display: none;
+}

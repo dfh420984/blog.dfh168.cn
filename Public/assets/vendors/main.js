@@ -16,7 +16,7 @@ var head_image = {
     data:function () {
         return {avatar:'../uploads/avatar.jpg', name:'dfh420984'}
     },
-    methods:function () {
+    methods:{
         
     }
 }
@@ -54,7 +54,6 @@ var aside_temple = {
         '      </li>\n' +
         '      </ul>'
 }
-
 Vue.component('nav_bar',nav_bar);
 Vue.component('head_image',head_image);
 Vue.component('aside_temple',aside_temple);
