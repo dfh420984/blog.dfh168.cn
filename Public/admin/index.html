@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="../assets/vendors/nprogress/nprogress.css">
   <link rel="stylesheet" href="../assets/css/admin.css">
   <script src="../assets/vendors/nprogress/nprogress.js"></script>
-  <script src="/assets/vendors/commen.js"></script>
   <script src="/assets/vendors/vue/vue.js"></script>
   <script src="/assets/vendors/axios/axios.min.js"></script>
+  <script src="/assets/vendors/main.js"></script>
   <style type="text/css">
     [v-cloak] {
       display: none;
@@ -96,7 +96,6 @@
   <script>NProgress.done()</script>
   <script>
       window.onload = function () {
-        var host = getHost();
         var vue_main = new Vue({
           el: '#main',
           data: {
@@ -110,7 +109,7 @@
             send(){
               axios({
                 method:'get',
-                url:`${host}/admin/index/index`
+                url:'/admin/index/index'
               }).then((resp)=>{
                 if (resp.data.code == 0) {
                   this.article_num = resp.data.data.article_num;
