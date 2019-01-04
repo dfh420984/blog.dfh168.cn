@@ -10,9 +10,15 @@ var nav_bar = {
 
 var head_image = {
     template:'<div class="profile">\n' +
-        '        <img class="avatar" src="../uploads/avatar.jpg">\n' +
-        '        <h3 class="name">布头儿</h3>\n' +
-        '      </div>'
+        '        <img class="avatar" v-bind:src="avatar">\n' +
+        '        <h3 class="name">{{ name }}</h3>\n' +
+        '      </div>',
+    data:function () {
+        return {avatar:'../uploads/avatar.jpg', name:'dfh420984'}
+    },
+    methods:function () {
+        
+    }
 }
 
 var aside_temple = {
