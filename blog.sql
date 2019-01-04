@@ -141,3 +141,6 @@ INSERT INTO `user` VALUES ('3', 'duanfuhao@163.com', '13693240212', '', '', '', 
 
 ALTER TABLE `posts`
 ADD COLUMN `image`  varchar(255) NOT NULL DEFAULT '' COMMENT '帖子图像' AFTER `slug`;
+
+ALTER TABLE `posts`
+CHANGE COLUMN `user_id` `admin_id`  int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '发帖用户id,关联admin.id' AFTER `id`;

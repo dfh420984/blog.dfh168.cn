@@ -11,14 +11,12 @@ namespace App\Model\Admin;
 use App\Model\BaseModel;
 use  EasySwoole\EasySwoole\Config;
 
-class PostModel extends BaseModel
+class CategoryModel extends BaseModel
 {
     protected $id = null;
-    protected $user_id;
-    protected $cat_id;
-    protected $title;
+    protected $parent_id;
     protected $slug;
-    protected $image;
+    protected $title;
     protected $content;
     protected $status;
     protected $time_create;
@@ -34,7 +32,7 @@ class PostModel extends BaseModel
     }
 
     /**
-     * @return mixed
+     * @return null
      */
     public function getId()
     {
@@ -42,7 +40,7 @@ class PostModel extends BaseModel
     }
 
     /**
-     * @param mixed $id
+     * @param null $id
      */
     public function setId($id): void
     {
@@ -52,49 +50,17 @@ class PostModel extends BaseModel
     /**
      * @return mixed
      */
-    public function getUserId()
+    public function getParentId()
     {
-        return $this->user_id;
+        return $this->parent_id;
     }
 
     /**
-     * @param mixed $user_id
+     * @param mixed $parent_id
      */
-    public function setUserId($user_id): void
+    public function setParentId($parent_id): void
     {
-        $this->user_id = $user_id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCatId()
-    {
-        return $this->cat_id;
-    }
-
-    /**
-     * @param mixed $cat_id
-     */
-    public function setCatId($cat_id): void
-    {
-        $this->cat_id = $cat_id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param mixed $title
-     */
-    public function setTitle($title): void
-    {
-        $this->title = $title;
+        $this->parent_id = $parent_id;
     }
 
     /**
@@ -116,17 +82,17 @@ class PostModel extends BaseModel
     /**
      * @return mixed
      */
-    public function getImage()
+    public function getTitle()
     {
-        return $this->image;
+        return $this->title;
     }
 
     /**
-     * @param mixed $image
+     * @param mixed $title
      */
-    public function setImage($image): void
+    public function setTitle($title): void
     {
-        $this->image = $image;
+        $this->title = $title;
     }
 
     /**
@@ -196,11 +162,11 @@ class PostModel extends BaseModel
     /**
      * @param $data
      * @return mixed
-     * 添加帖子
+     * 添加分类
      */
-    public function postAdd($data)
+    public function categoryAdd($data)
     {
-        $this->db->insert($this->db_config['posts_table'], $data);
+        $this->db->insert($this->db_config['category_table'], $data);
         $res = $this->db->getInsertId();
         return $res;
     }
@@ -210,62 +176,39 @@ class PostModel extends BaseModel
      * @return mixed
      * 编辑帖子
      */
-    public function postEdit($data)
+    public function categoryEdit($data)
     {
         $id = $data['id'];
         unset($data['id']);
-        $res = $this->db->where('id', $id)->update($this->db_config['posts_table'], $data);
+        $res = $this->db->where('id', $id)->update($this->db_config['category_table'], $data);
         return $res;
     }
 
     /**
      * 获取帖子列表
      */
-    public function postList($data = [])
+    public function categoryList($data=[])
     {
         $where = [
             'page' => 1,
             'size' => $this->size,
-            'cat_id' => 0,
+            'parent_id' => "",
             'status' => ""
         ];
-        $where = array_merge($where, $data);
-        $offset = ($where['page'] - 1) * $where['size'];
+        $offset = ($where['page'] - 1) * $this->size;
         $bindParams = [];
-        if (!isset($data['count'])) {
-            $field = "p.id,
-                p.title,
-                p.time_create,
-                CASE p.`status`
-            WHEN 0 THEN
-                '草稿'
-            WHEN 1 THEN
-                '已发布'
-            WHEN 2 THEN
-                '已删除'
-            END AS `status`,
-             a.email,
-             a.mobile,
-             c.content
-            ";
-            $sql = "SELECT {$field}";
-        } else {
-            $sql = "SELECT count(p.id) as total";
-        }
-        $sql .= " FROM
-                {$this->db_config['posts_table']} AS p
-            INNER JOIN {$this->db_config['admin_table']} AS a ON p.admin_id = a.id
-            INNER JOIN {$this->db_config['category_table']} AS c ON p.cat_id = c.id WHERE 1=1";
-        if (!empty($where['cat_id'])) {
-            $sql .= " AND p.cat_id = ?";
-            $bindParams[] = $where['cat_id'];
+        $sql = "SELECT * FROM {$this->db_config['category_table']} WHERE 1=1";
+        $where = array_merge($where, $data);
+        if (is_numeric($where['parent_id'])) {
+            $sql .= " AND p.parent_id = ?";
+            $bindParams[] = $where['parent_id'];
         }
         if (is_numeric($where['status'])) {
             $sql .= " AND p.status = ?";
             $bindParams[] = $where['status'];
         }
         if (!isset($data['count'])) {
-            $sql .= " LIMIT {$offset},{$where['size']}";
+            $sql .= " LIMIT {$offset},{$this->size}";
         }
         $res = $this->db->rawQuery($sql, $bindParams);
         return $res;
