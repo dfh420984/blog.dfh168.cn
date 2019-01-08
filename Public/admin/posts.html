@@ -73,7 +73,7 @@
               <td class="text-center">{{ item.status_name }}</td>
               <td class="text-center">
                 <a v-bind:href="'/admin/post-add.html?id='+item.id" class="btn btn-default btn-xs">编辑</a>
-                <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+                <a href="javascript:;" class="btn btn-danger btn-xs" @click.stop.prevent="del(item.id)">删除</a>
               </td>
           </tr>
           <tr v-if="all == 0">
@@ -151,6 +151,19 @@
           this.postsUrl = this.postsUrl+'?cat_id='+this.cur_cat_id+'&status='+this.cur_tatus
           this.getPostsList()
           this.postsUrl = postsUrl;
+        },
+        del(id){
+          if (confirm('确定删除吗?')) {
+            delPostUrl = "/admin/posts/postDel?id="+id
+            this.$http.get(delPostUrl).then(response => {
+              if (response.data.code == 0) {
+                this.searchPosts()
+              }
+            }, response => {
+              // error callback
+              console.log(response)
+            });
+          }
         }
       },
       computed: {

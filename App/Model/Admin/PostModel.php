@@ -289,6 +289,12 @@ class PostModel extends BaseModel
         return $res;
     }
 
+    public function postDel($id)
+    {
+        $res = $this->db->where('id', $id)->delete($this->db_config['posts_table'],1);
+        return $res;
+    }
+
     public function __destruct()
     {
         $this->recycleMysqlPoolObj($this->db);

@@ -102,6 +102,22 @@ class Posts extends Base
     }
 
     /**
+     * 删除帖子接口
+     */
+    public function postDel() {
+        $id = $this->request()->getRequestParam("id");
+        if (empty($id)) {
+            return $this->writeJson(1, 'id不能为空', '');
+        }
+        $res = $this->postObj->postDel($id);
+        if (!empty($res)) {
+            return $this->writeJson(0, '删除帖子成功', '');
+        } else {
+            return $this->writeJson(1, '删除帖子失败', '');
+        }
+    }
+
+    /**
      * @param $data
      * 添加帖子验证规则 dfh
      */
