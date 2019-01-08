@@ -36,7 +36,7 @@
           </select>
           <select name="" class="form-control input-sm" v-model="cur_tatus">
             <option value="">所有状态</option>
-            <option v-for="(item, k) in status" v-bind:value="k" value="">{{ item }}</option>
+            <option v-for="(item, k) in status_name" v-bind:value="k" >{{ item }}</option>
           </select>
           <button class="btn btn-default btn-sm" v-on:click.stop.prevent="searchPosts()">筛选</button>
         </form>
@@ -70,7 +70,7 @@
               <td>{{ item.email }}</td>
               <td>{{ item.content }}</td>
               <td class="text-center">{{ item.time_create }}</td>
-              <td class="text-center">{{ item.status }}</td>
+              <td class="text-center">{{ item.status_name }}</td>
               <td class="text-center">
                 <a v-bind:href="'/admin/post-add.html?id='+item.id" class="btn btn-default btn-xs">编辑</a>
                 <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
@@ -102,7 +102,7 @@
         categoryUrl:categoryUrl,
         postsUrl:postsUrl,
         categoryList:[],
-        status:['草稿','已发布'],
+        status_name:['草稿','已发布'],
         postsList:[],
         all: 0, //总页数
         cur: 1,//当前页码

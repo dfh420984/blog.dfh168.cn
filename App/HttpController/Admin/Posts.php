@@ -18,7 +18,7 @@ class Posts extends Base
 
     public $postObj = null;
     public $valitor = null;
-    public $pagesize = 1;
+    public $pagesize = 20;
     public $maxpageno = 7; //页面最多显示页码数
     public $url = "?page=";
 
@@ -51,7 +51,7 @@ class Posts extends Base
             //$pageObj = new \App\HttpController\Utility\PageEllipsis($total, $this->pagesize, $this->url, $this->maxpageno = 7);
             //$pageStr = $pageObj->pagelist($data['page']);
             $return['data'] = $res;
-            $return['total'] = $total[0]['total'];
+            $return['total'] = ceil($total[0]['total'] / $this->pagesize); //总页数
         }
         if (!empty($res)) {
             return $this->writeJson(0, 'ok', $return);
@@ -61,7 +61,15 @@ class Posts extends Base
     }
 
     public function searchWhere() {
-        return $data = $this->request()->getRequestParam("cat_id", "status");
+        return $data = $this->request()->getRequestParam("id", "cat_id", "status");
+    }
+
+    /**
+     * 获取帖子分类接口
+     */
+    public function getPostsStatus() {
+        $return = ['草稿','已发布'];
+        return $this->writeJson(0, 'ok', $return);
     }
 
     /**
@@ -70,35 +78,39 @@ class Posts extends Base
      */
     public function postAddEdit()
     {
-        $posts_array = $this->request()->getRequestParam();
-        $posts_array = $this->purifierHtml($posts_array);
-        if (!$this->checkPost($posts_array)) {
-            return $this->writeJson(1, 'fail', $this->valitor->getError()->__toString());
-        }
-        $this->postObj->getRelectObj($this->postObj, $posts_array);
-        $data = $this->postObj->toArray(null, PostModel::FILTER_NOT_NULL);//转为数组并过滤掉null值
-        if (!empty($data['id'])) {
-            $res = $this->postObj->postEdit($data);
-        } else {
-            $res = $this->postObj->postAdd($data);
-        }
-        if (!empty($res)) {
-            return $this->writeJson(0, 'ok', $res);
-        } else {
-            return $this->writeJson(1, '操作数据库失败', '');
+        try {
+            $posts_array = $this->request()->getRequestParam();
+            $posts_array = $this->purifierHtml($posts_array);
+            if (!$this->checkPost($posts_array)) {
+                return $this->writeJson(1, 'fail', $this->valitor->getError()->__toString());
+            }
+            $this->postObj->getRelectObj($this->postObj, $posts_array);
+            $data = $this->postObj->toArray(null, PostModel::FILTER_NOT_NULL);//转为数组并过滤掉null值
+            if (!empty($data['id'])) {
+                $res = $this->postObj->postEdit($data);
+            } else {
+                $res = $this->postObj->postAdd($data);
+            }
+            if (!empty($res)) {
+                return $this->writeJson(0, 'ok', $res);
+            } else {
+                return $this->writeJson(1, '操作数据库失败', '');
+            }
+        }catch (\Exception $e) {
+            return $this->writeJson(1, '程序异常', $e->getMessage());
         }
     }
 
     /**
      * @param $data
-     * 添加帖子验证规则
+     * 添加帖子验证规则 dfh
      */
     public function checkPost($data)
     {
         if (!empty($data['id'])) {
             $this->valitor->addColumn('id')->required('id不能为空')->integer('id必须为整型')->min(0, 'id必须大于0');
         }
-        $this->valitor->addColumn('user_id')->required('user_id不能为空')->integer('user_id必须为整型')->min(0, 'user_id必须大于0');
+        $this->valitor->addColumn('admin_id')->required('admin_id不能为空')->integer('admin_id必须为整型')->min(0, 'admin_id必须大于0');
         $this->valitor->addColumn('title')->required('title必填')->betweenLen(1, 100, 'title需1-100字符之间');
         $this->valitor->addColumn('content')->required('content不能为空');
         return $this->valitor->validate($data);

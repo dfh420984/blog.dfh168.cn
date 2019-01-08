@@ -14,7 +14,7 @@ use  EasySwoole\EasySwoole\Config;
 class PostModel extends BaseModel
 {
     protected $id = null;
-    protected $user_id;
+    protected $admin_id;
     protected $cat_id;
     protected $title;
     protected $slug;
@@ -52,17 +52,17 @@ class PostModel extends BaseModel
     /**
      * @return mixed
      */
-    public function getUserId()
+    public function getAdminId()
     {
-        return $this->user_id;
+        return $this->admin_id;
     }
 
     /**
      * @param mixed $user_id
      */
-    public function setUserId($user_id): void
+    public function setAdminId($admin_id): void
     {
-        $this->user_id = $user_id;
+        $this->admin_id = $admin_id;
     }
 
     /**
@@ -200,9 +200,16 @@ class PostModel extends BaseModel
      */
     public function postAdd($data)
     {
-        $this->db->insert($this->db_config['posts_table'], $data);
-        $res = $this->db->getInsertId();
-        return $res;
+        try {
+            if (isset($data['id'])) {
+                unset($data['id']);
+            }
+            $this->db->insert($this->db_config['posts_table'], $data);
+            $res = $this->db->getInsertId();
+            return $res;
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
     }
 
     /**
@@ -224,6 +231,7 @@ class PostModel extends BaseModel
     public function postList($data = [])
     {
         $where = [
+            "id" => 0,
             'page' => 1,
             'size' => $this->size,
             'cat_id' => 0,
@@ -236,6 +244,12 @@ class PostModel extends BaseModel
             $field = "p.id,
                 p.title,
                 p.time_create,
+                p.image,
+                p.slug,
+                p.cat_id,
+                p.admin_id,
+                p.content as p_content,
+                p.status,
                 CASE p.`status`
             WHEN 0 THEN
                 '草稿'
@@ -243,7 +257,7 @@ class PostModel extends BaseModel
                 '已发布'
             WHEN 2 THEN
                 '已删除'
-            END AS `status`,
+            END AS `status_name`,
              a.email,
              a.mobile,
              c.content
@@ -256,6 +270,10 @@ class PostModel extends BaseModel
                 {$this->db_config['posts_table']} AS p
             INNER JOIN {$this->db_config['admin_table']} AS a ON p.admin_id = a.id
             INNER JOIN {$this->db_config['category_table']} AS c ON p.cat_id = c.id WHERE 1=1";
+        if (!empty($where['id'])) {
+            $sql .= " AND p.id = ?";
+            $bindParams[] = $where['id'];
+        }
         if (!empty($where['cat_id'])) {
             $sql .= " AND p.cat_id = ?";
             $bindParams[] = $where['cat_id'];

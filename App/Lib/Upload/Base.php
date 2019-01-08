@@ -13,7 +13,7 @@ use EasySwoole\Http\Request;
 class Base
 {
     public $data = ['code' => 0, 'msg' => 'ok', 'data' => []];
-    public $rootPath = '/uploads';
+    public $uploadPathRoot = EASYSWOOLE_ROOT.'/Public';
     private $request = null;
     public $size = 0;
     public $fileName = '';
@@ -52,12 +52,14 @@ class Base
             if ($this->checkSize()) {
                 $this->fileName = $fileObj->getClientFilename();
                 if ($this->checkFileExtType()) {
-                    $targetPath = $this->getTargetPath();
-                    if ($fileObj->moveTo($targetPath)) {
+                    $pathArr = $this->getTargetPath();
+                    $fullPath = $pathArr['fullPath'];
+                    $uploadPath = $pathArr['uploadPath'];
+                    if ($fileObj->moveTo($fullPath)) {
                         if (empty($key) && empty($key2)) {
-                            $this->data['data'] = $targetPath;  //单文件返回
+                            $this->data['data'] = $uploadPath;  //单文件返回
                         }else {
-                            $this->data['data'][$key][$key2] = $targetPath;   //处理多文件返回
+                            $this->data['data'][$key][$key2] = $uploadPath;   //处理多文件返回
                         }
                     } else {
                         $this->data['code'] = 1;
@@ -130,13 +132,14 @@ class Base
         $nameClass = strtolower(str_replace('\\', '/', get_class($this))); //get_class获取的是带命名空间类名
         $nameClassArr = explode('/', $nameClass);
         $dirName = array_pop($nameClassArr);
-        $uploadPath = '/' . $dirName . '/' . date("Y") . '/' . date("m") . '/';
+        $uploadPath = '/uploads/' . $dirName . '/' . date("Y") . '/' . date("m") . '/';
         $fileName = md5(uniqid(rand())) . '.' . $this->extension;
-        $fullPath = $this->rootPath . $uploadPath;
+        $fullPath = $this->uploadPathRoot.$uploadPath;
         if (!is_dir($fullPath)) {
             mkdir($fullPath, 0755, true);
         }
         $fullPath .= $fileName;
-        return $fullPath;
+        $uploadPath .= $fileName;
+        return ['fullPath' => $fullPath, 'uploadPath'=>$uploadPath];
     }
 }
