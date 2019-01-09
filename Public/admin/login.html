@@ -3,27 +3,70 @@
 <head>
   <meta charset="utf-8">
   <title>Sign in &laquo; Admin</title>
-  <link rel="stylesheet" href="../assets/vendors/bootstrap/css/bootstrap.css">
-  <link rel="stylesheet" href="../assets/css/admin.css">
+  <link rel="stylesheet" href="/assets/vendors/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="/assets/css/admin.css">
+  <script src="/assets/vendors/vue/vue.js"></script>
+  <script src="/assets/vendors/vue/vue-resource.js"></script>
 </head>
 <body>
-  <div class="login">
+  <div class="login" id="login" v-cloak>
     <form class="login-wrap">
-      <img class="avatar" src="../assets/img/default.png">
+      <img class="avatar" src="/assets/img/default.png">
       <!-- 有错误信息时展示 -->
-      <!-- <div class="alert alert-danger">
-        <strong>错误！</strong> 用户名或密码错误！
-      </div> -->
+      <div class="alert alert-danger" v-if="error">
+        <strong>错误！</strong> {{ errorMsg }}
+      </div>
       <div class="form-group">
         <label for="email" class="sr-only">邮箱</label>
-        <input id="email" type="email" class="form-control" placeholder="邮箱" autofocus>
+        <input id="email" type="email" v-model="account" @focus="hideError()" class="form-control" placeholder="邮箱/手机号" autofocus>
       </div>
       <div class="form-group">
         <label for="password" class="sr-only">密码</label>
-        <input id="password" type="password" class="form-control" placeholder="密码">
+        <input id="password" v-model="passwd" type="password" @focus="hideError()" @keypress="enterConfirm($event)" class="form-control" placeholder="密码">
       </div>
-      <a class="btn btn-primary btn-block" href="index.html">登 录</a>
+      <a class="btn btn-primary btn-block" href="javascript:void(0);" @click="login()">登 录</a>
     </form>
   </div>
+  <script>
+    var loginUrl = '/admin/login/login';
+    var vue = new Vue({
+      el:"#login",
+      data:{
+        'account':'',
+        'passwd':'',
+        'error':0,
+        'errorMsg':'用户名或密码错误！'
+      },
+      methods:{
+        login(){ //登陆操作
+          //发送post请求
+          if (!this.account || !this.passwd) {
+            this.error = 1
+            this.errorMsg = '用户名或密码不能为空！'
+            return false;
+          }
+          let data = {account:this.account,passwd:this.passwd}
+          this.$http.post(loginUrl,data, {emulateJSON:true}).then(response => {
+            if (response.data.code == 0) {
+              window.location.href = '/admin/index.html';
+            } else {
+              this.error = 1
+              this.errorMsg = response.data.msg
+            }
+          },function(){
+            alert('请求失败处理');   //失败处理
+          });
+        },
+        hideError() {
+          this.error = 0
+        },
+        enterConfirm(event) {
+          if (event.keyCode == 13) {
+            this.login()
+          }
+        }
+      }
+    });
+  </script>
 </body>
 </html>

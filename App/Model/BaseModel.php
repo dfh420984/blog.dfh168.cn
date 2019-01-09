@@ -5,6 +5,7 @@
  * Date: 2018/12/25
  * Time: 18:02
  */
+
 namespace App\Model;
 
 use EasySwoole\EasySwoole\Config;
@@ -12,16 +13,19 @@ use App\Lib\Pool\MysqlPool;
 use EasySwoole\Component\Pool\PoolManager;
 use EasySwoole\Spl\SplBean;
 
-class BaseModel extends SplBean {
+class BaseModel extends SplBean
+{
 
     /**获得mysql连接池链接**/
-    public function getMysqlPoolObj() {
+    public function getMysqlPoolObj()
+    {
         $db = PoolManager::getInstance()->getPool(MysqlPool::class)->getObj(Config::getInstance()->getConf('mysql.pool_time_out'));
         return $db;
     }
 
     /**释放mysql连接池链接**/
-    public function recycleMysqlPoolObj($db) {
+    public function recycleMysqlPoolObj($db)
+    {
         PoolManager::getInstance()->getPool(MysqlPool::class)->recycleObj($db);
     }
 
@@ -43,6 +47,11 @@ class BaseModel extends SplBean {
             }
         }
         return $obj;
+    }
+
+    public function returnData($code = 0, $msg = 'ok', $data = '')
+    {
+        return  ['code' => $code, 'msg' => $msg, 'data' => $data];
     }
 
 }

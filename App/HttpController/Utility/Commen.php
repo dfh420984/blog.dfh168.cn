@@ -47,4 +47,19 @@ class Commen
         }
         return $sons;
     }
+
+    /**
+     * 过滤html
+     */
+    public function purifierHtml($data)
+    {
+        $config = \HTMLPurifier_Config::createDefault();
+        $purifier = new \HTMLPurifier($config);
+        foreach ($data as $key => $val) {
+            if (!is_numeric($val)) {
+                $data[$key] = $purifier->purify($val);
+            }
+        }
+        return $data;
+    }
 }

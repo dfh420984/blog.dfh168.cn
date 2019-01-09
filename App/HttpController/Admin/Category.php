@@ -61,7 +61,8 @@ class Category extends Base
     public function categoryAddEdit()
     {
         $posts_array = $this->request()->getRequestParam();
-        $posts_array = $this->purifierHtml($posts_array);
+        $comObj = new \App\HttpController\Utility\Commen();
+        $posts_array = $comObj->purifierHtml($posts_array);
         if (!$this->checkCategory($posts_array)) {
             return $this->writeJson(1, 'fail', $this->valitor->getError()->__toString());
         }
@@ -91,21 +92,6 @@ class Category extends Base
         $this->valitor->addColumn('parent_id')->required('user_id不能为空')->integer('user_id必须为整型');
         $this->valitor->addColumn('content')->required('title必填')->betweenLen(1, 100, 'title需1-100字符之间');
         return $this->valitor->validate($data);
-    }
-
-    /**
-     * 过滤字符串
-     */
-    public function purifierHtml($data)
-    {
-        $config = \HTMLPurifier_Config::createDefault();
-        $purifier = new \HTMLPurifier($config);
-        foreach ($data as $key => $val) {
-            if (!is_numeric($val)) {
-                $data[$key] = $purifier->purify($val);
-            }
-        }
-        return $data;
     }
 
 
