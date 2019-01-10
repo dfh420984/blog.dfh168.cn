@@ -38,11 +38,14 @@ class BaseModel extends SplBean
     {
         $reflectObject = new  \ReflectionObject($obj);
         $methods = $reflectObject->getMethods();
+        $className = $reflectObject->getName(); //获取类名
         foreach ($methods as $key => $method) {
-            if (count($params = $method->getParameters()) > 0) {
-                $paramName = $params[0]->getName();
-                if (isset($data[$paramName])) {
-                    $method->invoke($obj, $data[$paramName]);
+            if ($method->getDeclaringClass()->getName() == $className && preg_match('/^set|get\.*/',$method->getName())) {
+                if (count($params = $method->getParameters()) > 0) {
+                    $paramName = $params[0]->getName();
+                    if (isset($data[$paramName])) {
+                        $method->invoke($obj, $data[$paramName]);
+                    }
                 }
             }
         }

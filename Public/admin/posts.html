@@ -151,7 +151,7 @@
         },
         del(id){
           if (confirm('确定删除吗?')) {
-            delPostUrl = "/admin/posts/postDel?id="+id
+            let delPostUrl = "/admin/posts/postDel?id="+id
             this.$http.get(delPostUrl).then(response => {
               if (response.data.code == 0) {
                 this.searchPosts()

@@ -186,7 +186,9 @@
       },
       created() {
         let id = this.$route.query.id;
-        this.id = id
+        if (id != undefined) {
+          this.id = parseInt(id)
+        }
         this.getPostsStatus()
         this.getCategory()
         if (parseInt(this.id) > 0) {

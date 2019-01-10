@@ -100,8 +100,8 @@ class Posts extends Base
             } else {
                 return $this->writeJson(1, '操作数据库失败', '');
             }
-        }catch (\Exception $e) {
-            return $this->writeJson(1, '程序异常', $e->getMessage());
+        }catch (\Throwable $throwable) {
+            return $this->writeJson(1, '程序异常', $throwable->getMessage());
         }
     }
 

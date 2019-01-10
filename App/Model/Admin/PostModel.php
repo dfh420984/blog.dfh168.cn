@@ -207,8 +207,8 @@ class PostModel extends BaseModel
             $this->db->insert($this->db_config['posts_table'], $data);
             $res = $this->db->getInsertId();
             return $res;
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        } catch (\Throwable $throwable) {
+            throw $throwable;
         }
     }
 
