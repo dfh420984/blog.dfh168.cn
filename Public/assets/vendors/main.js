@@ -3,7 +3,7 @@ var nav_bar = {
         '      <button class="btn btn-default navbar-btn fa fa-bars"></button>\n' +
         '      <ul class="nav navbar-nav navbar-right">\n' +
         '        <li><a href="/admin/profile.html"><i class="fa fa-user"></i>个人中心</a></li>\n' +
-        '        <li><a href="/admin/login.html"><i class="fa fa-sign-out"></i>退出</a></li>\n' +
+        '        <li><a href="/admin/login/loginOut"><i class="fa fa-sign-out"></i>退出</a></li>\n' +
         '      </ul>\n' +
         '    </nav>'
 };

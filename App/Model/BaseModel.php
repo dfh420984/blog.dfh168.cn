@@ -12,21 +12,31 @@ use EasySwoole\EasySwoole\Config;
 use App\Lib\Pool\MysqlPool;
 use EasySwoole\Component\Pool\PoolManager;
 use EasySwoole\Spl\SplBean;
+use EasySwoole\Component\Context;
 
 class BaseModel extends SplBean
 {
 
-    /**获得mysql连接池链接**/
+    /**
+     * ContextManager上下文管理器
+    *  在swoole中,由于多个协程是并发执行的，因此不能使用类静态变量/全局变量保存协程上下文内容。使用局部变量是安全的，因为局部变量的值会自动保存在协程栈中，其他协程访问不到协程的局部变量。
+    *  在控制器中,我们可以使用ContextManager保存协程上下文内容
+     * 在 onRequest全局事件中注册MysqlObject
+     **/
     public function getMysqlPoolObj()
     {
-        $db = PoolManager::getInstance()->getPool(MysqlPool::class)->getObj(Config::getInstance()->getConf('mysql.pool_time_out'));
-        return $db;
+        $db = PoolManager::getInstance()->getPool(MysqlPool::class)->getObj(Config::getInstance()->getConf('mysql.pool_time_out'));//获得mysql连接池链接
+        //注册一个mysql连接,这次请求都将是单例Mysql的
+        //在控制器中获取本次请求唯一的一个数据库连接
+        Context::getInstance()->set('mysqlObject',$db);
+        $mysqlObject = Context::getInstance()->get('mysqlObject');
+        return $mysqlObject;
     }
 
     /**释放mysql连接池链接**/
-    public function recycleMysqlPoolObj($db)
+    public function recycleMysqlPoolObj($mysqlObject)
     {
-        PoolManager::getInstance()->getPool(MysqlPool::class)->recycleObj($db);
+        PoolManager::getInstance()->getPool(MysqlPool::class)->recycleObj($mysqlObject);
     }
 
     /**
