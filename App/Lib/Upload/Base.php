@@ -12,8 +12,8 @@ use EasySwoole\Http\Request;
 
 class Base
 {
-    public $data = ['code' => 0, 'msg' => '', 'data' => []];
-    public $rootPath = '/uploads';
+    public $data = ['code' => 0, 'msg' => 'ok', 'data' => []];
+    public $uploadPathRoot = EASYSWOOLE_ROOT.'/Public';
     private $request = null;
     public $size = 0;
     public $fileName = '';
@@ -24,7 +24,8 @@ class Base
         $this->request = $request;
     }
 
-    public function upload()
+    /**多图上传**/
+    public function uploads()
     {
         try {
             $fileUploadObjs = $this->request->getUploadedFiles(); //获取多个上传对象
@@ -38,22 +39,28 @@ class Base
                     $key2 = 0;
                     $this->doUpload($fileObj, $key, $key2);
                 }
-            }
+        }
             return $this->data;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
     }
 
-    public function doUpload($fileObj, $key, $key2=0) {
+    public function doUpload($fileObj, $key=0, $key2=0) {
         if ($this->getError($fileObj)) {
             $this->size = $fileObj->getSize();
             if ($this->checkSize()) {
                 $this->fileName = $fileObj->getClientFilename();
                 if ($this->checkFileExtType()) {
-                    $targetPath = $this->getTargetPath();
-                    if ($fileObj->moveTo($targetPath)) {
-                        $this->data['data'][$key][$key2] = $targetPath;
+                    $pathArr = $this->getTargetPath();
+                    $fullPath = $pathArr['fullPath'];
+                    $uploadPath = $pathArr['uploadPath'];
+                    if ($fileObj->moveTo($fullPath)) {
+                        if (empty($key) && empty($key2)) {
+                            $this->data['data'] = $uploadPath;  //单文件返回
+                        }else {
+                            $this->data['data'][$key][$key2] = $uploadPath;   //处理多文件返回
+                        }
                     } else {
                         $this->data['code'] = 1;
                         $this->data['msg'] = '上传文件失败';
@@ -62,6 +69,20 @@ class Base
             }
         }
     }
+
+    /**单文件上传**/
+    public function upload() {
+        try {
+            $fileUploadObjs = $this->request->getUploadedFiles(); //获取单个上传对象
+            foreach ($fileUploadObjs as $key => $fileObj) {
+                $this->doUpload($fileObj);
+            }
+            return $this->data;
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
 
     public function getError($fileObj)
     {
@@ -111,13 +132,14 @@ class Base
         $nameClass = strtolower(str_replace('\\', '/', get_class($this))); //get_class获取的是带命名空间类名
         $nameClassArr = explode('/', $nameClass);
         $dirName = array_pop($nameClassArr);
-        $uploadPath = '/' . $dirName . '/' . date("Y") . '/' . date("m") . '/';
+        $uploadPath = '/uploads/' . $dirName . '/' . date("Y") . '/' . date("m") . '/';
         $fileName = md5(uniqid(rand())) . '.' . $this->extension;
-        $fullPath = $this->rootPath . $uploadPath;
+        $fullPath = $this->uploadPathRoot.$uploadPath;
         if (!is_dir($fullPath)) {
             mkdir($fullPath, 0755, true);
         }
         $fullPath .= $fileName;
-        return $fullPath;
+        $uploadPath .= $fileName;
+        return ['fullPath' => $fullPath, 'uploadPath'=>$uploadPath];
     }
 }

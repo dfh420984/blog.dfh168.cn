@@ -8,18 +8,17 @@
   <link rel="stylesheet" href="../assets/vendors/nprogress/nprogress.css">
   <link rel="stylesheet" href="../assets/css/admin.css">
   <script src="../assets/vendors/nprogress/nprogress.js"></script>
+  <script src="/assets/vendors/vue/vue.js"></script>
+  <script src="/assets/vendors/vue/vue-resource.js"></script>
+  <script src="/assets/vendors/main.js"></script>
+  <script src="/assets/vendors/jquery/jquery.js"></script>
+  <script src="/assets/vendors/bootstrap/js/bootstrap.js"></script>
 </head>
 <body>
   <script>NProgress.start()</script>
 
-  <div class="main">
-    <nav class="navbar">
-      <button class="btn btn-default navbar-btn fa fa-bars"></button>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="profile.html"><i class="fa fa-user"></i>个人中心</a></li>
-        <li><a href="login.html"><i class="fa fa-sign-out"></i>退出</a></li>
-      </ul>
-    </nav>
+  <div class="main" id="main" v-cloak>
+    <nav_bar></nav_bar>
     <div class="container-fluid">
       <div class="page-title">
         <h1>所有文章</h1>
@@ -33,23 +32,25 @@
         <!-- show when multiple checked -->
         <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none">批量删除</a>
         <form class="form-inline">
-          <select name="" class="form-control input-sm">
+          <select name="" class="form-control input-sm" v-model="cur_cat_id">
             <option value="">所有分类</option>
-            <option value="">未分类</option>
+            <option  v-for="item in categoryList" v-bind:value="item.id">{{ item.content }}</option>
           </select>
-          <select name="" class="form-control input-sm">
+          <select name="" class="form-control input-sm" v-model="cur_tatus">
             <option value="">所有状态</option>
-            <option value="">草稿</option>
-            <option value="">已发布</option>
+            <option v-for="(item, k) in status_name" v-bind:value="k" >{{ item }}</option>
           </select>
-          <button class="btn btn-default btn-sm">筛选</button>
+          <button class="btn btn-default btn-sm" v-on:click.stop.prevent="searchPosts()">筛选</button>
         </form>
-        <ul class="pagination pagination-sm pull-right">
-          <li><a href="#">上一页</a></li>
-          <li><a href="#">1</a></li>
-          <li><a href="#">2</a></li>
-          <li><a href="#">3</a></li>
-          <li><a href="#">下一页</a></li>
+        <ul class="pagination pagination-sm pull-right" v-if="all > 0">
+          <li v-if="cur==1"><a>首页</a></li>
+          <li v-if="cur>1"><a v-on:click="cur--,pageClick()">上一页</a></li>
+          <li v-for="index in indexs"  v-bind:class="{ 'active': cur == index}">
+            <a v-on:click="btnClick(index)">{{ index }}</a>
+          </li>
+          <li v-if="cur!=all"><a v-on:click="cur++,pageClick()">下一页</a></li>
+          <li v-if="cur == all"><a>尾页</a></li>
+          <li><a>共<i>{{all}}</i>页</a></li>
         </ul>
       </div>
       <table class="table table-striped table-bordered table-hover">
@@ -65,87 +66,134 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="text-center"><input type="checkbox"></td>
-            <td>随便一个名称</td>
-            <td>小小</td>
-            <td>潮科技</td>
-            <td class="text-center">2016/10/07</td>
-            <td class="text-center">已发布</td>
-            <td class="text-center">
-              <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-            </td>
+          <tr v-for="item in postsList" v-if="all > 0">
+              <td class="text-center"><input type="checkbox"></td>
+              <td>{{ item.title }}</td>
+              <td>{{ item.email }}</td>
+              <td>{{ item.content }}</td>
+              <td class="text-center">{{ item.time_create }}</td>
+              <td class="text-center">{{ item.status_name }}</td>
+              <td class="text-center">
+                <a v-bind:href="'/admin/post-add.html?id='+item.id" class="btn btn-default btn-xs">编辑</a>
+                <a href="javascript:;" class="btn btn-danger btn-xs" @click.stop.prevent="del(item.id)">删除</a>
+              </td>
           </tr>
-          <tr>
-            <td class="text-center"><input type="checkbox"></td>
-            <td>随便一个名称</td>
-            <td>小小</td>
-            <td>潮科技</td>
-            <td class="text-center">2016/10/07</td>
-            <td class="text-center">已发布</td>
-            <td class="text-center">
-              <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-            </td>
-          </tr>
-          <tr>
-            <td class="text-center"><input type="checkbox"></td>
-            <td>随便一个名称</td>
-            <td>小小</td>
-            <td>潮科技</td>
-            <td class="text-center">2016/10/07</td>
-            <td class="text-center">已发布</td>
-            <td class="text-center">
-              <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-            </td>
+          <tr v-if="all == 0">
+              <td colspan="6">暂无数据<td>
           </tr>
         </tbody>
       </table>
     </div>
-  </div>
-
-  <div class="aside">
-    <div class="profile">
-      <img class="avatar" src="../uploads/avatar.jpg">
-      <h3 class="name">布头儿</h3>
+    <div class="aside">
+      <head_image></head_image>
+      <aside_temple></aside_temple>
     </div>
-    <ul class="nav">
-      <li>
-        <a href="index.html"><i class="fa fa-dashboard"></i>仪表盘</a>
-      </li>
-      <li class="active">
-        <a href="#menu-posts" data-toggle="collapse">
-          <i class="fa fa-thumb-tack"></i>文章<i class="fa fa-angle-right"></i>
-        </a>
-        <ul id="menu-posts" class="collapse in">
-          <li class="active"><a href="posts.html">所有文章</a></li>
-          <li><a href="post-add.html">写文章</a></li>
-          <li><a href="categories.html">分类目录</a></li>
-        </ul>
-      </li>
-      <li>
-        <a href="comments.html"><i class="fa fa-comments"></i>评论</a>
-      </li>
-      <li>
-        <a href="users.html"><i class="fa fa-users"></i>用户</a>
-      </li>
-      <li>
-        <a href="#menu-settings" class="collapsed" data-toggle="collapse">
-          <i class="fa fa-cogs"></i>设置<i class="fa fa-angle-right"></i>
-        </a>
-        <ul id="menu-settings" class="collapse">
-          <li><a href="nav-menus.html">导航菜单</a></li>
-          <li><a href="slides.html">图片轮播</a></li>
-          <li><a href="settings.html">网站设置</a></li>
-        </ul>
-      </li>
-    </ul>
   </div>
-
-  <script src="../assets/vendors/jquery/jquery.js"></script>
-  <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
   <script>NProgress.done()</script>
+  <script>
+    var categoryUrl = '/admin/category/index'
+    var postsUrl = '/admin/posts/index'
+    var vue = new Vue({
+      el:"#main",
+      data:{
+        categoryUrl:categoryUrl,
+        postsUrl:postsUrl,
+        categoryList:[],
+        status_name:['草稿','已发布'],
+        postsList:[],
+        all: 0, //总页数
+        cur: 1,//当前页码
+        cur_tatus:'',
+        cur_cat_id:''
+      },
+      methods:{
+        getCategory(){
+          this.$http.get(this.categoryUrl).then(response => {
+            if (response.data.code == 0) {
+              this.categoryList = response.data.data
+            }
+          }, response => {
+            // error callback
+            console.log(response)
+          });
+        },
+        getPostsList(){
+          this.$http.get(this.postsUrl).then(response => {
+            if (response.data.code == 0) {
+              this.postsList = response.data.data.data
+              this.all = response.data.data.total
+            } else {
+              this.postsList = []
+              this.all = 0
+            }
+          }, response => {
+            // error callback
+            console.log(response)
+          });
+        },
+        btnClick: function(page){//页码点击事件
+          if(page != this.cur){
+            this.cur = page
+            this.postsUrl = this.postsUrl+'?page='+this.cur+'&cat_id='+this.cur_cat_id+'&status='+this.cur_tatus
+            this.getPostsList()
+            this.postsUrl = postsUrl;
+          }
+        },
+        pageClick: function(){
+          this.postsUrl = this.postsUrl+'?page='+this.cur+'&cat_id='+this.cur_cat_id+'&status='+this.cur_tatus
+          this.getPostsList()
+          this.postsUrl = postsUrl;
+        },
+        searchPosts() {
+          this.postsUrl = this.postsUrl+'?cat_id='+this.cur_cat_id+'&status='+this.cur_tatus
+          this.getPostsList()
+          this.postsUrl = postsUrl;
+        },
+        del(id){
+          if (confirm('确定删除吗?')) {
+            let delPostUrl = "/admin/posts/postDel?id="+id
+            this.$http.get(delPostUrl).then(response => {
+              if (response.data.code == 0) {
+                this.searchPosts()
+              }
+            }, response => {
+              // error callback
+              console.log(response)
+            });
+          }
+        }
+      },
+      computed: {
+        indexs: function(){
+          var left = 1;
+          var right = this.all;
+          var ar = [];
+          if(this.all>= 5){
+            if(this.cur > 3 && this.cur < this.all-2){
+              left = this.cur - 2
+              right = this.cur + 2
+            }else{
+              if(this.cur<=3){
+                left = 1
+                right = 5
+              }else{
+                right = this.all
+                left = this.all -4
+              }
+            }
+          }
+          while (left <= right){
+            ar.push(left)
+            left ++
+          }
+          return ar
+        }
+      },
+      created:function () {
+        this.getCategory();
+        this.getPostsList();
+      }
+    });
+  </script>
 </body>
 </html>
