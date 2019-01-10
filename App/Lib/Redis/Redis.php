@@ -77,6 +77,6 @@ class Redis
         if (empty($arguments)) {
             return '';
         }
-        return $this->redis->$name($arguments[0]);
+        return $this->redis->$name(...$arguments);
     }
 }
