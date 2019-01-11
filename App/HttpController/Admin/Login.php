@@ -27,7 +27,7 @@ class Login extends Base
         return true;
     }
 
-    /**登录接口**/
+    /**登录接口 session入redis**/
     public function login()
     {
         try {
