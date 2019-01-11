@@ -11,7 +11,7 @@ return [
     'host'=>'mysql',
     'port'=>3306,
     'user'=>'root',
-    'password'=>'DockerLNMP',
+    'password'=>'123456',
     'database'=>'blog',
     'charset' => 'utf8',
     'timeout' => 5,

@@ -1,13 +1,13 @@
 {
-   "autoload": {
-        "psr-4": {
-            "App\\": "App/"
-        }
-    },
-    "require": {
-        "easyswoole/easyswoole": "3.x-dev",
-      "duncan3dc/blade": "^4.3",
-      "easyswoole/mysqli": "^1.1",
-      "ezyang/htmlpurifier": "^4.10"
+  "autoload": {
+    "psr-4": {
+      "App\\": "App/"
     }
+  },
+  "require": {
+    "easyswoole/easyswoole": "3.x-dev",
+    "duncan3dc/blade": "^4.3",
+    "easyswoole/mysqli": "^1.1",
+    "ezyang/htmlpurifier": "^4.10"
+  }
 }
