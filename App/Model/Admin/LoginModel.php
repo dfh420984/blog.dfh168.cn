@@ -24,7 +24,7 @@ class LoginModel extends BaseModel
 
     public function verifyAccout($data)
     {
-        $sql = "SELECT * FROM {$this->db_config['admin_table']} WHERE email = ? OR mobile = ?";
+        $sql = "SELECT id,email,mobile,head_image,passwd FROM {$this->db_config['admin_table']} WHERE email = ? OR mobile = ?";
         $res = $this->db->rawQuery($sql, [$data['account'], $data['account']]);
         if (empty($res)) {
             return $this->returnData(1, '账号不存在', '');
@@ -32,6 +32,7 @@ class LoginModel extends BaseModel
             $userInfo = $res[0];
             // password_hash('123456',PASSWORD_DEFAULT)
             if (password_verify($data['passwd'], $userInfo['passwd'])) {
+                unset($userInfo['passwd']);
                 return $this->returnData(0, 'ok', $userInfo);
             } else {
                 return $this->returnData(1, '密码不正确', '');

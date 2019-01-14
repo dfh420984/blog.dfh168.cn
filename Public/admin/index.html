@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8">
   <title>Dashboard &laquo; Admin</title>
-  <link rel="stylesheet" href="../assets/vendors/bootstrap/css/bootstrap.css">
-  <link rel="stylesheet" href="../assets/vendors/font-awesome/css/font-awesome.css">
-  <link rel="stylesheet" href="../assets/vendors/nprogress/nprogress.css">
-  <link rel="stylesheet" href="../assets/css/admin.css">
-  <script src="../assets/vendors/nprogress/nprogress.js"></script>
+  <link rel="stylesheet" href="/assets/vendors/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="/assets/vendors/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="/assets/vendors/nprogress/nprogress.css">
+  <link rel="stylesheet" href="/assets/css/admin.css">
+  <script src="/assets/vendors/nprogress/nprogress.js"></script>
   <script src="/assets/vendors/vue/vue.js"></script>
-  <script src="/assets/vendors/axios/axios.min.js"></script>
+  <script src="/assets/vendors/vue/vue-resource.js"></script>
+  <!--<script src="/assets/vendors/axios/axios.min.js"></script>-->
   <script src="/assets/vendors/main.js"></script>
   <style type="text/css">
     [v-cloak] {
@@ -51,11 +52,10 @@
     </div>
   </div>
 
-  <script src="../assets/vendors/jquery/jquery.js"></script>
-  <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="/assets/vendors/jquery/jquery.js"></script>
+  <script src="/assets/vendors/bootstrap/js/bootstrap.js"></script>
   <script>NProgress.done()</script>
   <script>
-      window.onload = function () {
         var vue_main = new Vue({
           el: '#main',
           data: {
@@ -67,19 +67,15 @@
           },
           methods: {
             send(){
-              axios({
-                method:'get',
-                url:'/admin/index/index'
-              }).then((resp)=>{
-                if (resp.data.code == 0) {
-                  this.article_num = resp.data.data.article_num;
-                  this.article_draft_num = resp.data.data.article_draft_num;
-                  this.category_num = resp.data.data.category_num;
-                  this.comment_num = resp.data.data.comment_num;
-                  this.verify_comment_num = resp.data.data.verify_comment_num;
-                }
-              }).catch(resp => {
-                console.log('请求失败：'+resp.status+','+resp.statusText);
+              this.$http.get('/admin/index/index').then(response => {
+                this.article_num = response.data.data.article_num;
+                this.article_draft_num = response.data.data.article_draft_num;
+                this.category_num = response.data.data.category_num;
+                this.comment_num = response.data.data.comment_num;
+                this.verify_comment_num = response.data.data.verify_comment_num;
+              }, response => {
+                // error callback
+                console.log(response)
               });
             }
           },
@@ -87,7 +83,6 @@
             this.send()
           }
         });
-      }
   </script>
 </body>
 </html>

@@ -4,11 +4,13 @@ namespace App\HttpController\Utility;
 
 use EasySwoole\EasySwoole\Config;
 use EasySwoole\Http\Session\SessionHandler;
-
+use EasySwoole\Component\Singleton;
 use Redis;
 
 class RedisSession extends SessionHandler implements \SessionHandlerInterface
 {
+    use Singleton;
+
     private $options = [
         'handler' => null,
         'host' => null,
@@ -66,9 +68,8 @@ class RedisSession extends SessionHandler implements \SessionHandlerInterface
         $this->options['lifeTime'] = $maxLifeTime;
         if (is_resource($this->options['handler'])) return true;
         //连接redis
-//        $redisHandle = new Redis();
-//        $redisHandle->connect($this->options['host'], $this->options['port']);
-        $redisHandle = \EasySwoole\Component\Di::getInstance()->get('REDIS');
+        $redisHandle = new Redis();
+        $redisHandle->connect($this->options['host'], $this->options['port']);
         if (!$redisHandle) {
             return false;
         }
@@ -83,7 +84,15 @@ class RedisSession extends SessionHandler implements \SessionHandlerInterface
     public function read($session_id)
     {
         $session_id = $this->options['prefix'] . $session_id;
-        return $this->options['handler']->get($session_id);
+        $data = $this->options['handler']->get($session_id);
+        for($i=0;$i<3;$i++) {
+            if ($data == "+OK") {
+                $data = $this->options['handler']->get($session_id);
+            } else {
+                break;
+            }
+        }
+        return $data;
     }
 
     /**
@@ -94,6 +103,8 @@ class RedisSession extends SessionHandler implements \SessionHandlerInterface
     public function write($session_id, $session_data)
     {
         $session_id = $this->options['prefix'] . $session_id;
-        return $this->options['handler']->setex($session_id, $this->options['lifeTime'], $session_data);
+        if (!empty($session_data) && !empty(unserialize($session_data))) {
+            return $this->options['handler']->setex($session_id, $this->options['lifeTime'], $session_data);
+        }
     }
 }

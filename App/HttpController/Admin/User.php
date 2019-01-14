@@ -7,9 +7,8 @@
 **/
 namespace  App\HttpController\Admin;
 use App\HttpController\Base;
-use App\Model\Admin\IndexModel;
 
-class Index extends Base {
+class User extends Base {
 
     public function onRequest(?string $action): ?bool
     {
@@ -20,12 +19,10 @@ class Index extends Base {
     }
 
     /**
-     * 后台首页 dfh
+     * 获取用户信息
      * Index constructor.
      */
     public function index() {
-        $model = new IndexModel();
-        $data = $model->index();
-        return $this->writeJson($data["code"],$data["msg"],$data["data"]);
+        return $this->writeJson(0,'ok',$this->admin_info);
     }
 }

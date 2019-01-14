@@ -5,7 +5,10 @@ var nav_bar = {
         '        <li><a href="/admin/profile.html"><i class="fa fa-user"></i>个人中心</a></li>\n' +
         '        <li><a href="/admin/login/loginOut"><i class="fa fa-sign-out"></i>退出</a></li>\n' +
         '      </ul>\n' +
-        '    </nav>'
+        '    </nav>',
+    data:function () {
+        return {}
+    }
 };
 
 var head_image = {
@@ -14,10 +17,29 @@ var head_image = {
         '        <h3 class="name">{{ name }}</h3>\n' +
         '      </div>',
     data:function () {
-        return {avatar:'/uploads/avatar.jpg', name:'dfh420984'}
+        return {avatar:'/uploads/avatar.jpg', name:''}
     },
     methods:{
-        
+        getUserInfo(){ //获取用户信息判断是否已登录
+            let userUrl = '/admin/user/index';
+            this.$http.get(userUrl).then(response => {
+                if (response.data.code == 0) {
+                    let userInfo = response.data.data
+                    this.avatar = userInfo.head_image ? userInfo.head_image : '/uploads/avatar.jpg'
+                        this.name = userInfo.email ? userInfo.email : (userInfo.mobile ? userInfo.mobile : 'dfh420984')
+                } else {
+                    window.location.href='/admin/login.html'
+                }
+            }, response => {
+                // error callback
+                if (response.data.code == 403) {
+                    window.location.href='/admin/login.html'
+                }
+            });
+        }
+    },
+    created(){
+        this.getUserInfo()
     }
 }
 
