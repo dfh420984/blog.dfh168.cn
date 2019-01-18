@@ -26,7 +26,7 @@ class Redis
             $redisConf = Config::getInstance()->getConf('redis');
             $res = $this->redis->connect($redisConf['host'], $redisConf['port'], $redisConf['timeout']);
         } catch (\Exception $e) {
-            throw new \Exception('redis服务异常');
+            throw new \Exception('redis服务异常:'.$e->getMessage());
         }
         if ($res === false) {
             throw new \Exception('redis链接服务异常');

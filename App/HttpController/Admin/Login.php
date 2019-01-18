@@ -11,6 +11,8 @@ namespace App\HttpController\Admin;
 use EasySwoole\Validate\Validate;
 use App\Model\Admin\LoginModel;
 use EasySwoole\Http\AbstractInterface\Controller;
+use EasySwoole\EasySwoole\Config;
+
 
 class Login extends Controller
 {
