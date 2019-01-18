@@ -70,7 +70,7 @@ class Category extends Base
             return $this->writeJson(1, 'fail', $this->valitor->getError()->__toString());
         }
         $this->categoryObj->getRelectObj($this->categoryObj, $posts_array);
-        $data = $this->categoryObj->toArray(null, PostModel::FILTER_NOT_NULL);//转为数组并过滤掉null值
+        $data = $this->categoryObj->toArray(null, CategoryModel::FILTER_NOT_NULL);//转为数组并过滤掉null值
         if (!empty($data['id'])) {
             $res = $this->categoryObj->categoryEdit($data);
         } else {
@@ -84,6 +84,23 @@ class Category extends Base
     }
 
     /**
+     * 删除分类接口
+     */
+    public function categoryDel()
+    {
+        $id = $this->request()->getRequestParam("id");
+        if (empty($id)) {
+            return $this->writeJson(1, 'id不能为空', '');
+        }
+        $res = $this->categoryObj->categoryDel($id);
+        if (!empty($res)) {
+            return $this->writeJson(0, '删除分类成功', '');
+        } else {
+            return $this->writeJson(1, '删除分类失败', '');
+        }
+    }
+
+    /**
      * @param $data
      * 添加帖子验证规则
      */
@@ -92,8 +109,7 @@ class Category extends Base
         if (!empty($data['id'])) {
             $this->valitor->addColumn('id')->required('id不能为空')->integer('id必须为整型')->min(0, 'id必须大于0');
         }
-        $this->valitor->addColumn('parent_id')->required('user_id不能为空')->integer('user_id必须为整型');
-        $this->valitor->addColumn('content')->required('title必填')->betweenLen(1, 100, 'title需1-100字符之间');
+        $this->valitor->addColumn('content')->required('content必填')->betweenLen(1, 100, 'content需1-100字符之间');
         return $this->valitor->validate($data);
     }
 

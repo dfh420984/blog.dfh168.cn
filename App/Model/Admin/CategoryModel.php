@@ -187,7 +187,7 @@ class CategoryModel extends BaseModel
     /**
      * 获取帖子列表
      */
-    public function categoryList($data=[])
+    public function categoryList($data = [])
     {
         $where = [
             'page' => 1,
@@ -211,6 +211,17 @@ class CategoryModel extends BaseModel
             $sql .= " LIMIT {$offset},{$this->size}";
         }
         $res = $this->db->rawQuery($sql, $bindParams);
+        return $res;
+    }
+
+    /**
+     * 删除分类接口
+     * @author dfh
+     * @param $id
+     */
+    public function categoryDel($id)
+    {
+        $res = $this->db->where('id', $id)->delete($this->db_config['category_table'],1);
         return $res;
     }
 

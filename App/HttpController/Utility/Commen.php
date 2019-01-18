@@ -56,6 +56,7 @@ class Commen
         $config = \HTMLPurifier_Config::createDefault();
         $purifier = new \HTMLPurifier($config);
         foreach ($data as $key => $val) {
+            $data[$key] = trim($val);
             if (!is_numeric($val)) {
                 $data[$key] = $purifier->purify($val);
             }
