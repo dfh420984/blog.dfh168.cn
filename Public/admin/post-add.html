@@ -126,7 +126,7 @@
             if (response.data.code == 0) {
               let postsList = response.data.data.data
               this.title = postsList[0]['title'];
-              this.content = postsList[0]['content'];
+              this.content = postsList[0]['p_content'];
               this.slug = postsList[0]['slug'];
               this.cur_tatus = postsList[0]['status'];
               this.cat_id = postsList[0]['cat_id'];

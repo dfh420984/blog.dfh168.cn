@@ -86,11 +86,11 @@ class Posts extends Base
             $posts_array = $this->request()->getRequestParam();
             $comObj = new \App\HttpController\Utility\Commen();
             $posts_array = $comObj->purifierHtml($posts_array);
-            $posts_array = array_map(function ($val) { //过滤特殊字符
-                if (!empty($val)) {
-                    return htmlspecialchars($val);
-                }
-            }, $posts_array);
+//            $posts_array = array_map(function ($val) { //过滤特殊字符
+//                if (!empty($val)) {
+//                    return htmlspecialchars($val);
+//                }
+//            }, $posts_array);
             if (!$this->checkPost($posts_array)) {
                 return $this->writeJson(1, $this->valitor->getError()->__toString(), '');
             }
