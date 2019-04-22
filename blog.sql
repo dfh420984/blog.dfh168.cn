@@ -107,3 +107,11 @@ CREATE TABLE `user` (
   UNIQUE KEY `ix_email` (`email`),
   UNIQUE KEY `ix_mobile` (`mobile`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='前台用户表';
+
+
+ALTER TABLE `admin`
+ADD COLUMN `nick_name`  varchar(20) NOT NULL DEFAULT '' COMMENT '昵称' AFTER `head_image`,
+ADD COLUMN `alias`  varchar(20) NOT NULL DEFAULT '' COMMENT '别名' AFTER `nick_name`;
+
+ALTER TABLE `posts`
+ADD COLUMN `view_num`  int(11) NOT NULL DEFAULT 0 COMMENT '帖子浏览量' AFTER `content`;
